@@ -17,3 +17,6 @@ class Settings():
         self.bullet_height = 15
         self.bullet_color = (229, 81, 55)
 
+        # Максимальное количество снарядов на экране
+        self.bullets_allowed = 3
+

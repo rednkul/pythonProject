@@ -30,8 +30,11 @@ class AlienInvasion:
         while True:
             self._chek_events()
             self._update_screen()
+            self._update_bullets()
             self.ship.update()
-            self.bullets.update()
+
+
+
 
     def _chek_events(self):
         """Обрабатывает нажатия клавиш и события мыши"""
@@ -67,8 +70,19 @@ class AlienInvasion:
     def _fire_bullet(self):
         """Создание нового снаряда и включение его в группу bullets."""
         new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullets_allowed:
+            self.bullets.add(new_bullet)
 
+    def _update_bullets(self):
+        """Обновляет позицию снаряда и удаляет его при уходе за экран"""
+        # Обновление позиции снаряда .
+        self.bullets.update()
+
+        # Удаление снаряда, вышедшего за край экрана.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+        print(len(self.bullets))
 
     def _update_screen(self):
         """Обновляет отображение экрана"""
