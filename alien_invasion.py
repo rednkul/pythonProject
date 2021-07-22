@@ -40,8 +40,9 @@ class AlienInvasion:
             self._chek_events()
             self._update_screen()
             self._update_bullets()
-
             self.ship.update()
+            self._update_aliens()
+
 
     def _chek_events(self):
         """Обрабатывает нажатия клавиш и события мыши"""
@@ -90,6 +91,10 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
         print(len(self.bullets))
+
+    def _update_aliens(self):
+        """Обновляет позиции всех пришельцев во флоте"""
+        self.aliens.update()
 
     def _update_screen(self):
         """Обновляет отображение экрана"""
