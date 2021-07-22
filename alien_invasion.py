@@ -1,9 +1,11 @@
 import sys
+from random import randint
 import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from stars import Star
 
 class AlienInvasion:
     """Класс для управления ресурсами и повоедением игры."""
@@ -25,15 +27,20 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
 
         self.aliens = pygame.sprite.Group()
+
         self._create_fleet()
+
+        self.stars = pygame.sprite.Group()
 
     def run_game(self):
 
         """Запуск основного цикла игры."""
+        self._create_stars()
         while True:
             self._chek_events()
             self._update_screen()
             self._update_bullets()
+
             self.ship.update()
 
     def _chek_events(self):
@@ -88,10 +95,12 @@ class AlienInvasion:
         """Обновляет отображение экрана"""
         # При каждом проходе цикла перерисовывается экран.
         self.screen.fill(self.settings.bg_color)
+        self.stars.draw(self.screen)
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
         # Отображение последнего прорисованного экрана.
         pygame.display.flip()
 
@@ -123,6 +132,32 @@ class AlienInvasion:
         alien.rect.x = alien.x
         alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
         self.aliens.add(alien)
+
+    def _create_stars(self):
+        """Создание случайного фона из звезд"""
+        star = Star(self)
+        star_width, star_height = star.rect.size
+        # Определение количества звезд в ряду
+        stars_available_space_x = self.settings.screen_width - (2 * star_width)
+        number_stars_x = stars_available_space_x // (2 * star_width)
+
+        """Определяет количество рядов звезд на экране"""
+        stars_available_space_y = self.settings.screen_height - 3 * star_height
+        stars_number_rows = stars_available_space_y // (2 * star_height)
+
+        # Создание звездного фона
+        for row_number in range(stars_number_rows):
+            for star_number in range(number_stars_x):
+                self._create_star(star_number, row_number)
+
+    def _create_star(self, star_number, row_number):
+        """Создание звезды"""
+        star = Star(self)
+        star_width, star_height = star.rect.size
+        star.x = (star_width + 2 * star_width * star_number) * randint(2, 4)
+        star.rect.x = star.x
+        star.rect.y = (star_height + 2 * star_height * row_number) * randint(2, 4)
+        self.stars.add(star)
 
 
 if __name__ == '__main__':
