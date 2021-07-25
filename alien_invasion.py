@@ -7,6 +7,7 @@ from bullet import Bullet
 from alien import Alien
 from stars import Star
 
+
 class AlienInvasion:
     """Класс для управления ресурсами и повоедением игры."""
 
@@ -31,11 +32,11 @@ class AlienInvasion:
         self._create_fleet()
 
         self.stars = pygame.sprite.Group()
+        self._create_stars()
 
     def run_game(self):
 
         """Запуск основного цикла игры."""
-        self._create_stars()
         while True:
             self._chek_events()
             self._update_screen()
@@ -85,6 +86,10 @@ class AlienInvasion:
         """Обновляет позицию снаряда и удаляет его при уходе за экран"""
         # Обновление позиции снаряда .
         self.bullets.update()
+        # Проверка попаданий в пришельцев.
+        # При обнаружениии попадания удалить снаряд и пришельца
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, False, True)
 
         # Удаление снаряда, вышедшего за край экрана.
         for bullet in self.bullets.copy():
@@ -95,6 +100,7 @@ class AlienInvasion:
     def _update_aliens(self):
         """Обновляет позиции всех пришельцев во флоте"""
         self.aliens.update()
+        self._check_fleet_edges()
 
     def _update_screen(self):
         """Обновляет отображение экрана"""
@@ -137,6 +143,19 @@ class AlienInvasion:
         alien.rect.x = alien.x
         alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
         self.aliens.add(alien)
+
+    def _check_fleet_edges(self):
+        """Реагирует на достижение пришельцем края экрана"""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        """Опускает весь флот и меняет направление флота"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
 
     def _create_stars(self):
         """Создание случайного фона из звезд"""
