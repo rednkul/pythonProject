@@ -22,7 +22,7 @@ class Settings():
 
         # Настройки пришельцев
         self.alien_speed = 1.0
-        self.fleet_drop_speed = 50
+        self.fleet_drop_speed = 100
         #fleet_direction = 1 - движение вправо; -1 - влево
         self.fleet_direction = 1
 

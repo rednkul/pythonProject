@@ -86,7 +86,16 @@ class AlienInvasion:
         """Обновляет позицию снаряда и удаляет его при уходе за экран"""
         # Обновление позиции снаряда .
         self.bullets.update()
-        # Проверка попаданий в пришельцев.
+
+        # Удаление снаряда, вышедшего за край экрана.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
+        self._chek_bullet_alien_collisions()
+
+    def _chek_bullet_alien_collisions(self):
+        """Обработка коллизий снарядов с пришельцами"""
         # При обнаружениии попадания удалить снаряд и пришельца
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, False, True)
@@ -95,16 +104,14 @@ class AlienInvasion:
             self.bullets.empty()
             self._create_fleet()
 
-        # Удаление снаряда, вышедшего за край экрана.
-        for bullet in self.bullets.copy():
-            if bullet.rect.bottom <= 0:
-                self.bullets.remove(bullet)
-        print(len(self.bullets))
-
     def _update_aliens(self):
         """Обновляет позиции всех пришельцев во флоте"""
         self.aliens.update()
         self._check_fleet_edges()
+
+        # Проверка коллизий "пришелец - корабль".
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            print('Кораблю №?@$%!!!')
 
     def _update_screen(self):
         """Обновляет отображение экрана"""
@@ -132,8 +139,8 @@ class AlienInvasion:
         ship_height = self.ship.rect.height
         available_space_y = (self.settings.screen_height -
                              (3 * alien_height) - ship_height)
-        number_rows = available_space_y // (2 * alien_height
-                                            )
+        number_rows = available_space_y // (2 * alien_height)
+
         # Создание флота пришельцев.
         for row_number in range(number_rows - 2):
             for alien_number in range(number_aliens_x):
